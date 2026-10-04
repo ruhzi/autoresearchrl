@@ -45,7 +45,7 @@ GOOD = {
     "measurements": [
         {"benchmark": "WidgetBench", "metric": "Acc",
          "baseline_cell": "71.2", "method_cell": "74.9",
-         "metric_unit": "%", "direction_per_paper": "higher_is_better"},
+         "metric_unit": "%"},
     ],
     "baseline_label": "baseline",
     "method_label": "GADGET",
