@@ -6,7 +6,6 @@ import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-DATA = ROOT / "data"
 
 
 def _load_dotenv(path: Path = ROOT / ".env") -> None:
@@ -34,6 +33,10 @@ def _load_dotenv(path: Path = ROOT / ".env") -> None:
 
 
 _load_dotenv()
+
+# Where every stage reads and writes. Override to keep data outside the
+# checkout: ARL_DATA_DIR=/somewhere (relative paths resolve against cwd).
+DATA = Path(os.getenv("ARL_DATA_DIR") or (ROOT / "data")).resolve()
 
 # ------------------------------------------------------------------- models
 #
@@ -83,8 +86,10 @@ CANDIDATES_PARTIAL_DIR = DATA / "candidates_partial"
 
 CATEGORIES = ["cs.LG", "cs.CL", "cs.AI", "cs.CV"]
 
-DATE_FROM = "202607010000"
-DATE_TO = "202608260000"   # exclusive end: covers submissions through 25 Aug 2026
+# arXiv submittedDate window, YYYYMMDDHHMM. DATE_TO is exclusive. Keep
+# DATE_FROM past the pretraining cutoff of any model you later evaluate.
+DATE_FROM = os.getenv("ARL_DATE_FROM", "202607010000")
+DATE_TO = os.getenv("ARL_DATE_TO", "202608260000")
 
 POOL_TARGET = int(os.getenv("ARL_POOL_TARGET", "1600"))   # arXiv pool size; raised with the window so the
                                                            # newer week is added, not swapped in for the older one
@@ -102,7 +107,7 @@ EPRINT_DELAY_S = 4.0
 
 USER_AGENT = os.getenv(
     "ARL_USER_AGENT",
-    "autoresearchrl/0.1 (research dataset build; ruhaan.chopra@olbrain.com)",
+    "autoresearchrl/0.1 (research dataset build)",
 )
 
 # ---------------------------------------------------------------- OpenRouter
