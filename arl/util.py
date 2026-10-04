@@ -12,6 +12,18 @@ from typing import Any, Iterable
 
 import config
 
+# Paper text is full of arrows, Greek, and CJK. On Windows the console is
+# often cp1252, and one such character in a progress line kills a stage.
+# Make both streams UTF-8 with replacement; output content is unchanged on
+# consoles that already handle UTF-8.
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="replace")
+        except (ValueError, AttributeError):
+            pass
+del _stream
+
 
 def log(msg: str) -> None:
     print(msg, file=sys.stderr, flush=True)
