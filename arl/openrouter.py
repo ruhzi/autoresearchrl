@@ -68,7 +68,6 @@ def _headers() -> dict:
     return {
         "Authorization": f"Bearer {config.api_key()}",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://github.com/ruhzi/autoresearchrl",
         "X-Title": "autoresearchrl dataset build",
     }
 
