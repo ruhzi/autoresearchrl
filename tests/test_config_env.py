@@ -16,7 +16,8 @@ def _probe(expr: str, **env: str) -> str:
     e.update(env)
     out = subprocess.run(
         [sys.executable, "-c", f"import config; print({expr})"],
-        cwd=ROOT, env=e, capture_output=True, text=True, check=True)
+        cwd=ROOT, env=e, capture_output=True, text=True, check=True,
+        stdin=subprocess.DEVNULL)
     return out.stdout.strip()
 
 
@@ -24,7 +25,8 @@ def test_data_defaults_to_repo_data_dir():
     env = {k: v for k, v in os.environ.items() if k != "ARL_DATA_DIR"}
     out = subprocess.run(
         [sys.executable, "-c", "import config; print(config.DATA)"],
-        cwd=ROOT, env=env, capture_output=True, text=True, check=True)
+        cwd=ROOT, env=env, capture_output=True, text=True, check=True,
+        stdin=subprocess.DEVNULL)
     assert Path(out.stdout.strip()) == (ROOT / "data").resolve()
 
 
