@@ -21,7 +21,7 @@ across papers.
 | 2 | `scripts/02_fetch.py` | download + unpack e-print LaTeX source | free |
 | 3 | `scripts/03_parse.py` | sections, tables, sanitised context | free |
 | 4 | `scripts/04_screen.py` | is-AI-research + introduces-method-with-results | LLM |
-| 5 | `scripts/05_enumerate.py` | agent over the paper: which comparisons exist, no numbers | LLM |
+| 5 | `scripts/05_enumerate.py` | RLM enumeration: which comparisons exist, no numbers | LLM |
 | 6 | `scripts/06_extract.py` | retrieval agent: verbatim spans + numbers per sample | LLM |
 | 7 | `scripts/07_assemble.py` | labels + LLM-composed researcher prompts | LLM |
 | 8 | `scripts/08_verify.py` | LLM audit: no outcome refs, faithful -> final dataset | LLM |
