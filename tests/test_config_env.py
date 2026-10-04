@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def _probe(expr: str, **env: str) -> str:
-    e = dict(os.environ)
+    e = {k: v for k, v in os.environ.items() if not k.startswith("ARL_")}
     e.update(env)
     out = subprocess.run(
         [sys.executable, "-c", f"import config; print({expr})"],
@@ -22,12 +22,7 @@ def _probe(expr: str, **env: str) -> str:
 
 
 def test_data_defaults_to_repo_data_dir():
-    env = {k: v for k, v in os.environ.items() if k != "ARL_DATA_DIR"}
-    out = subprocess.run(
-        [sys.executable, "-c", "import config; print(config.DATA)"],
-        cwd=ROOT, env=env, capture_output=True, text=True, check=True,
-        stdin=subprocess.DEVNULL)
-    assert Path(out.stdout.strip()) == (ROOT / "data").resolve()
+    assert Path(_probe("config.DATA")) == (ROOT / "data").resolve()
 
 
 def test_data_dir_override_is_absolute(tmp_path):
@@ -51,8 +46,7 @@ def test_date_window_defaults_and_overrides():
     assert _probe("config.DATE_TO", ARL_DATE_TO="202702010000") == "202702010000"
 
 
-def test_user_agent_has_no_email():
+def test_user_agent_is_default_and_has_no_email():
     ua = _probe("config.USER_AGENT")
     assert "@" not in ua
-    assert "olbrain" not in ua.lower()
-    assert ua.startswith("autoresearchrl/")
+    assert ua == "autoresearchrl/0.1 (research dataset build)"

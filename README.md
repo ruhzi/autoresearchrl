@@ -45,17 +45,18 @@ What each LLM stage is asked, and not asked:
 
 ## Requirements
 
-- Python 3.10 or newer. No third-party packages.
+- Python 3.12 or newer (3.10.12+ and 3.11.4+ also work). No third-party
+  packages at runtime; `pytest` for the offline tests.
 - Network access to arXiv (stages 1-2) and OpenRouter (stages 4-8).
 - One `OPENROUTER_API_KEY`, as an environment variable or a line in a
-  `.env` file at the repo root.
+  `.env` file at the repo root (`OPENROUTER_API_KEY=sk-or-...`).
 
 ## Quickstart
 
 ```powershell
 python run_all.py --local              # stages 1-3: no key, no cost
-python scripts/00_list_models.py       # confirm the model slugs exist on your account
-python run_all.py --limit 2            # 2 eligible papers end to end
+python scripts/00_list_models.py anthropic z-ai deepseek  # confirm the default model slugs exist
+python run_all.py --limit 2            # 2 eligible papers through stages 5-8 (stage 4 screens all sampled papers)
 python run_all.py --list               # show the stages and exit
 python run_all.py --dry-run            # print the plan, execute nothing
 ```
@@ -71,7 +72,7 @@ All knobs are environment variables read by `config.py`.
 | Variable | Default | Meaning |
 |---|---|---|
 | `OPENROUTER_API_KEY` | (required for stages 4-8) | OpenRouter key |
-| `ARL_DATA_DIR` | `./data` | where every stage reads and writes |
+| `ARL_DATA_DIR` | `<repo>/data` | where every stage reads and writes |
 | `ARL_DATE_FROM` | `202607010000` | arXiv submittedDate window start, YYYYMMDDHHMM |
 | `ARL_DATE_TO` | `202608260000` | window end, exclusive |
 | `ARL_SAMPLE_SIZE` | `50` | papers processed; raising it grows the corpus |
@@ -89,12 +90,15 @@ Model slugs are OpenRouter slugs, current as of 2026-10-01. Check them with
 
 ## What is and is not guaranteed
 
-Stage 6 payload (prose spans, evidence rows, the cell strings the values are
-parsed from) is sliced from the LaTeX source by anchor matching. A span or
-number that is not literally in the paper cannot be accepted. Which rows are
-paired, which is baseline and which is method, and the benchmark and metric
-names are model judgments. Stage 8 audits them; it does not prove them.
-Expect to review a sample of the output against the papers.
+Stage 6 prose spans and evidence rows are sliced from the LaTeX source by
+anchor matching. Each value is parsed from a cell string the model types; it
+is accepted only if that string occurs in the sliced evidence rows and parses
+to a number present there. So a value is a number from the table, not
+necessarily the right cell. Row pairing, baseline/method assignment, and the
+benchmark and metric names are model judgments. Stage 7 mechanically checks
+that each value occurs in its evidence. Stage 8 audits the composed prompt for
+leaked outcomes and faithfulness; it never sees the values and does not check
+the labels. Expect to review a sample of the output against the papers.
 
 Corrections are pipeline inputs so they survive re-runs. Three optional
 files in `ARL_DATA_DIR`:
@@ -102,7 +106,7 @@ files in `ARL_DATA_DIR`:
 - `label_overrides.json` — `{sample_id: {field: value}}`, applied in stage 7
   (a `measurements` list replaces the whole grid).
 - `prompt_overrides.json` — `{sample_id: "prompt body"}`, applied in stage 8.
-- `dropped_sample_ids.json` — `[sample_id, ...]`, skipped in stage 7.
+- `dropped_sample_ids.json` — `[sample_id, ...]`, excluded from the final dataset in stage 8.
 
 ## Reproducibility
 
@@ -110,6 +114,9 @@ files in `ARL_DATA_DIR`:
   same papers produce overlapping, not identical, sample sets.
 - `data/sample.json` is a manifest: once a paper is drawn it stays, and
   raising `ARL_SAMPLE_SIZE` only adds papers. Delete it to redraw.
+  Changing `ARL_DATE_FROM`/`ARL_DATE_TO` after a run has no effect on an
+  existing `pool.json` and `sample.json`; use a fresh `ARL_DATA_DIR`, or
+  delete those two files (or pass `--refresh` to stage 1), to redraw.
 - The arXiv pool changes daily. Pin the date window, and keep
   `ARL_DATE_FROM` past the pretraining cutoff of any model you will
   evaluate on the output, or you are measuring recall of a memorised paper.
