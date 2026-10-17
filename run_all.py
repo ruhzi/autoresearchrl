@@ -27,6 +27,7 @@ at stage 6. Pass --by-stage for the old breadth-first order.
 Flags passed through to the stages that understand them:
     --force     redo work that is already cached on disk
     --refresh   stage 1 only: rebuild the arXiv pool
+    --redraw    stage 1 only: abandon the previous sample draw
     --all       stage 5 only: enumerate every parsed paper, ignoring the screen
     --redo-done revisit papers listed in data/papers_done.json (by default a
                 paper that has finished stage 8 once is skipped, so samples
@@ -53,6 +54,7 @@ STAGES = [
 # which stages accept which pass-through flags
 FLAG_STAGES = {
     "--refresh": {1},
+    "--redraw": {1},
     "--force": {4, 5, 6, 7, 8},
     "--all": {5},
     "--strict": {7},
