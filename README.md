@@ -116,7 +116,8 @@ files in `ARL_DATA_DIR`:
   raising `ARL_SAMPLE_SIZE` only adds papers. Delete it to redraw.
   Changing `ARL_DATE_FROM`/`ARL_DATE_TO` after a run has no effect on an
   existing `pool.json` and `sample.json`; use a fresh `ARL_DATA_DIR`, or
-  delete those two files (or pass `--refresh` to stage 1), to redraw.
+  delete those two files, or pass `--refresh --redraw` to stage 1 (`--refresh`
+  rebuilds the pool, `--redraw` abandons the previous draw), to redraw.
 - The arXiv pool changes daily. Pin the date window, and keep
   `ARL_DATE_FROM` past the pretraining cutoff of any model you will
   evaluate on the output, or you are measuring recall of a memorised paper.
