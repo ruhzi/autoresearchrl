@@ -88,17 +88,6 @@ All knobs are environment variables read by `config.py`.
 Model slugs are OpenRouter slugs, current as of 2026-10-01. Check them with
 `scripts/00_list_models.py` before a run; providers rename and retire models.
 
-## What is and is not guaranteed
-
-Stage 6 prose spans and evidence rows are sliced from the LaTeX source by
-anchor matching. Each value is parsed from a cell string the model types; it
-is accepted only if that string occurs in the sliced evidence rows and parses
-to a number present there. So a value is a number from the table, not
-necessarily the right cell. Row pairing, baseline/method assignment, and the
-benchmark and metric names are model judgments. Stage 7 mechanically checks
-that each value occurs in its evidence. Stage 8 audits the composed prompt for
-leaked outcomes and faithfulness; it never sees the values and does not check
-the labels. Expect to review a sample of the output against the papers.
 
 Corrections are pipeline inputs so they survive re-runs. Three optional
 files in `ARL_DATA_DIR`:
