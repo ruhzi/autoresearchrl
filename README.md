@@ -1,4 +1,3 @@
-# autoresearchrl
 
 A pipeline that mines **controlled numeric comparisons** from recent arXiv
 machine-learning papers into training samples. Each sample is one comparison
